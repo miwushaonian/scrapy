@@ -155,14 +155,14 @@ class M3u8Download:
                                 if chunk:
                                     ts.write(chunk)
                         self._success_sum += 1
-                        sys.stdout.write(
-                            "\r[%-25s](%d/%d)"
-                            % (
-                                "*" * (100 * self._success_sum // self._ts_sum // 4),
-                                self._success_sum,
-                                self._ts_sum,
-                            )
-                        )
+                        # sys.stdout.write(
+                        #     "\r[%-25s](%d/%d)"
+                        #     % (
+                        #         "*" * (100 * self._success_sum // self._ts_sum // 4),
+                        #         self._success_sum,
+                        #         self._ts_sum,
+                        #     )
+                        # )
                         sys.stdout.flush()
                     else:
                         self.download_ts(ts_url, name, num_retries - 1)
@@ -217,18 +217,17 @@ class M3u8Download:
             stderr=sys.stderr,
         )
         p.wait()
-        print("cmd ret=%d" % p.returncode)
+        # print("cmd ret=%d" % p.returncode)
 
     def output_mp4(self):
         """
         合并.ts文件，输出mp4格式视频，需要ffmpeg
         """
         cmd = (
-            'ffmpeg -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
+            'ffmpeg -loglevel quiet -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
             % (self._file_path, self._name)
         )
         # os.system(cmd)
-        print(cmd)
         self.shell_run_cmd_block(cmd)
 
     def delete_file(self):
