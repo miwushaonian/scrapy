@@ -4,10 +4,15 @@ import sub
 import m3
 import multiprocessing
 import os
+import sys
 
 os.makedirs("video", exist_ok=True)
+if len(sys.argv) >= 2:
+    start_page = sys.argv[1]
+else:
+    start_page = 1
 if __name__ == "__main__":
-    i = 2
+    i = start_page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
     retrys = 0
