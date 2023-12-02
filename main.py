@@ -89,13 +89,14 @@ if __name__ == "__main__":
                                     payload={"fpsn": str(fpsn), "title": title_b64},
                                 )
                             )
-                            pass
+                        if len(batch_data)>=64:
+                                client.upsert(collection_name="video",points=batch_data)
+                                batch_data=[]
+                            
+                    if len(batch_data)>0:
+                        client.upsert(collection_name="video",points=batch_data)
                     cap.release()
                     os.remove(f"{k}.mp4")
-                    client.upsert(
-                        collection_name="video",
-                        points=batch_data,
-                    )
 
                 except Exception as e:
                     print(f"下载失败 {k} {e}")
