@@ -90,12 +90,12 @@ if __name__ == "__main__":
                                 )
                             )
                             pass
+                    cap.release()
+                    os.remove(f"{k}.mp4")
                     client.upsert(
                         collection_name="video",
                         points=batch_data,
                     )
-                    cap.release()
-                    os.remove(f"{k}.mp4")
 
                 except Exception as e:
                     print(f"下载失败 {k} {e}")
