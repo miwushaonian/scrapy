@@ -22,13 +22,13 @@ if __name__ == "__main__":
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
 
     args = parser.parse_args()
-
+    print(args)
     i = args.page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
     retrys = 0
     img_encoder = ops.image_embedding.timm(model_name="resnet50")
-    client = QdrantClient("10.131.7.124", port=6333)
+    client = QdrantClient(args.s, port=args.p)
     try:
         client.get_collection("video")
     except:
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         )
     while True:
         try:
-            client = QdrantClient("10.131.7.124", port=6333)
+            client = QdrantClient(args.s, port=args.p)
             cont = scraper.get(f"https://hsex.men/list-{i}.htm").content
             cont = cont.decode("utf-8")
             test_str = str(cont)
