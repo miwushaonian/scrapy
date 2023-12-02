@@ -73,6 +73,7 @@ if __name__ == "__main__":
                     # shutil.move(f"{k}.mp4", f"video/{k}.data")
                     cap = cv2.VideoCapture(f"{k}.mp4")
                     fpsn = 0
+                    batch_data = []
                     while True:
                         ret, frame = cap.read()
                         if ret == False:
@@ -81,17 +82,18 @@ if __name__ == "__main__":
                         if fpsn % 24 == 0:
                             vid = int("".join([str(ord(x)) for x in f"{k[6:-4]}"]))
                             feature = img_encoder(frame)
-                            client.upsert(
-                                collection_name="video",
-                                points=[
-                                    PointStruct(
-                                        id=vid * 1000000 + fpsn,
-                                        vector=feature.tolist(),
-                                        payload={"fpsn": str(fpsn), "title": title_b64},
-                                    )
-                                ],
+                            batch_data.append(
+                                PointStruct(
+                                    id=vid * 1000000 + fpsn,
+                                    vector=feature.tolist(),
+                                    payload={"fpsn": str(fpsn), "title": title_b64},
+                                )
                             )
                             pass
+                    client.upsert(
+                        collection_name="video",
+                        points=batch_data,
+                    )
                     os.remove(f"{k}.mp4")
 
                 except Exception as e:
