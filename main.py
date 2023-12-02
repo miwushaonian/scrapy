@@ -44,9 +44,10 @@ if __name__ == "__main__":
             print(f"Now scrapy page {i},total {len(matches_url)}")
             for k in matches_url:
                 try:
-                    m3u8_url = sub.get_m3u8(f"https://hsex.men/{k}")
+                    m3u8_url, title = sub.get_m3u8(f"https://hsex.men/{k}")
                     m3.proc([m3u8_url], [f"{k}"])
                     import shutil
+
                     shutil.move(f"{k}.mp4", f"video/{k}.data")
                 except Exception as e:
                     print(f"下载失败 {k} {e}")

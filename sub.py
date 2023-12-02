@@ -8,7 +8,12 @@ def get_m3u8(url_path):
     test_str = str(cont)
     import re
 
+    regex = r"<title>.*<\/title>"
+    matches = re.finditer(regex, test_str, re.MULTILINE)
+    title = matches.__next__().group()
+    title = title[7:-8]
+
     regex = r"https.*.m3u8.*?\""
     matches = re.finditer(regex, test_str, re.MULTILINE)
     targetUrl = matches.__next__().group()
-    return targetUrl[:-1]
+    return targetUrl[:-1], title
