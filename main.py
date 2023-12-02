@@ -89,7 +89,7 @@ if __name__ == "__main__":
                                     payload={"fpsn": str(fpsn), "title": title_b64},
                                 )
                             )
-                        if len(batch_data)>=64:
+                        if len(batch_data)>=12:
                                 client.upsert(collection_name="video",points=batch_data)
                                 batch_data=[]
                             
