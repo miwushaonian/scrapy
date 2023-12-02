@@ -94,6 +94,7 @@ if __name__ == "__main__":
                         collection_name="video",
                         points=batch_data,
                     )
+                    cap.release()
                     os.remove(f"{k}.mp4")
 
                 except Exception as e:
