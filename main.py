@@ -371,9 +371,9 @@ if __name__ == "__main__":
                     os.remove(f"{k}.data")
 
                 except Exception as e:
-                    print(f"下载失败 {k} {e}")
+                    print(f"下载视频失败 {k} {e}")
                     continue
             pass
         except Exception as e:
-            print(f"下载失败 {e}")
+            print(f"抓取页面失败 {e}")
             continue
