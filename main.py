@@ -11,6 +11,7 @@ import tqdm
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from qdrant_client.http.models import PointStruct
+import pickle
 
 
 def get_m3u8(url_path):
@@ -291,6 +292,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
+    parser.add_argument("-tdb", type=bool, default=False)
 
     args = parser.parse_args()
     print(args)
@@ -299,17 +301,19 @@ if __name__ == "__main__":
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
     retrys = 0
     img_encoder = ops.image_embedding.timm(model_name="resnet50")
-    client = QdrantClient(args.s, port=args.p)
-    try:
-        client.get_collection("video")
-    except:
-        client.create_collection(
-            collection_name="video",
-            vectors_config=VectorParams(size=2048, distance=Distance.COSINE),
-        )
+    if args.tdb:
+        client = QdrantClient(args.s, port=args.p)
+        try:
+            client.get_collection("video")
+        except:
+            client.create_collection(
+                collection_name="video",
+                vectors_config=VectorParams(size=2048, distance=Distance.COSINE),
+            )
     while True:
         try:
-            client = QdrantClient(args.s, port=args.p)
+            if args.tdb:
+                client = QdrantClient(args.s, port=args.p)
             cont = scraper.get(f"https://hsex.men/list-{i}.htm").content
             cont = cont.decode("utf-8")
             test_str = str(cont)
@@ -361,16 +365,21 @@ if __name__ == "__main__":
                                     payload={"fpsn": str(fpsn), "title": title_b64},
                                 )
                             )
-                        if len(batch_data) >= 12:
+                        if len(batch_data) >= 12 and args.tdb:
                             client.upsert(
                                 collection_name="video", points=batch_data, wait=False
                             )
                             batch_data = []
 
-                    if len(batch_data) > 0:
+                    if len(batch_data) > 0 and args.tdb:
                         client.upsert(
                             collection_name="video", points=batch_data, wait=False
                         )
+                    if False == args.tdb:
+                        # 序列化
+                        output = open(f"{k}.fea", "wb")
+                        pickle.dump(batch_data, output)
+                        pass
                     cap.release()
                     os.remove(f"{k}.data")
 
