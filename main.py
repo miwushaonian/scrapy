@@ -7,6 +7,7 @@ import argparse
 import base64
 from towhee import ops
 import cv2
+import tqdm
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from qdrant_client.http.models import PointStruct
@@ -333,15 +334,16 @@ if __name__ == "__main__":
                 retrys = 0
                 i = i + 1
             print(f"Now scrapy page {i},total {len(matches_url)}")
-            for k in matches_url:
+            process = tqdm.tqdm(matches_url)
+            for k in process:
                 try:
                     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
                     title_b64 = base64.b64encode(title.encode())
                     proc([m3u8_url], [f"{k}"])
                     import shutil
 
-                    # shutil.move(f"{k}.mp4", f"video/{k}.data")
-                    cap = cv2.VideoCapture(f"{k}.mp4")
+                    shutil.move(f"{k}.mp4", f"{k}.data")
+                    cap = cv2.VideoCapture(f"{k}.data")
                     fpsn = 0
                     batch_data = []
                     while True:
@@ -366,7 +368,7 @@ if __name__ == "__main__":
                     if len(batch_data) > 0:
                         client.upsert(collection_name="video", points=batch_data)
                     cap.release()
-                    os.remove(f"{k}.mp4")
+                    os.remove(f"{k}.data")
 
                 except Exception as e:
                     print(f"下载失败 {k} {e}")
