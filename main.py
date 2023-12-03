@@ -353,8 +353,6 @@ if __name__ == "__main__":
                     subprocess.Popen(
                         shell_cmd,
                         shell=True,
-                        stdout=sys.stdout,
-                        stderr=sys.stderr,
                     ).wait()
                     os.remove(f"{k}.data")
                     cap = cv2.VideoCapture(f"{k}.mp4")
