@@ -362,11 +362,15 @@ if __name__ == "__main__":
                                 )
                             )
                         if len(batch_data) >= 12:
-                            client.upsert(collection_name="video", points=batch_data)
+                            client.upsert(
+                                collection_name="video", points=batch_data, wait=False
+                            )
                             batch_data = []
 
                     if len(batch_data) > 0:
-                        client.upsert(collection_name="video", points=batch_data)
+                        client.upsert(
+                            collection_name="video", points=batch_data, wait=False
+                        )
                     cap.release()
                     os.remove(f"{k}.data")
 
