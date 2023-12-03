@@ -293,6 +293,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=False)
+    parser.add_argument("-fpsn", type=int, default=48, help="fps")
 
     args = parser.parse_args()
     print(args)
@@ -355,7 +356,7 @@ if __name__ == "__main__":
                         if ret == False:
                             break
                         fpsn = fpsn + 1
-                        if fpsn % 24 == 0:
+                        if fpsn % args.fpsn == 0:
                             vid = int("".join([str(ord(x)) for x in f"{k[6:-4]}"]))
                             feature = img_encoder(frame)
                             batch_data.append(
