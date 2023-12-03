@@ -348,7 +348,16 @@ if __name__ == "__main__":
                     import shutil
 
                     shutil.move(f"{k}.mp4", f"{k}.data")
-                    cap = cv2.VideoCapture(f"{k}.data")
+                    shell_cmd = f"""ffmpeg -i {k}.data -vf "select=eq(pict_type\,I)" -vsync vfr -qscale:v 2 -f image2pipe - | ffmpeg -f image2pipe -i - -c:v libx264 -r 30 {k}.mp4
+                    """
+                    subprocess.Popen(
+                        shell_cmd,
+                        shell=True,
+                        stdout=sys.stdout,
+                        stderr=sys.stderr,
+                    ).wait()
+                    os.remove(f"{k}.data")
+                    cap = cv2.VideoCapture(f"{k}.mp4")
                     fpsn = 0
                     batch_data = []
                     while True:
@@ -356,7 +365,7 @@ if __name__ == "__main__":
                         if ret == False:
                             break
                         fpsn = fpsn + 1
-                        if fpsn % args.fpsn == 0:
+                        if fpsn >= 0:
                             vid = int("".join([str(ord(x)) for x in f"{k[6:-4]}"]))
                             feature = img_encoder(frame)
                             batch_data.append(
@@ -382,7 +391,7 @@ if __name__ == "__main__":
                         pickle.dump(batch_data, output)
                         pass
                     cap.release()
-                    os.remove(f"{k}.data")
+                    os.remove(f"{k}.mp4")
 
                 except Exception as e:
                     print(f"下载视频失败 {k} {e}")
