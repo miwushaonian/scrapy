@@ -297,6 +297,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
+    cur_page = open("page",r)
     i = args.page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
@@ -338,6 +339,7 @@ if __name__ == "__main__":
             else:
                 retrys = 0
                 i = i + 1
+            cur_page.write(i)
             print(f"Now scrapy page {i},total {len(matches_url)}")
             process = tqdm.tqdm(matches_url)
             for k in process:
