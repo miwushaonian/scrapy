@@ -297,7 +297,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    cur_page = open("page",r)
+    cur_page = open("page","w")
     i = args.page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
@@ -327,6 +327,7 @@ if __name__ == "__main__":
             for matchNum, match in enumerate(matches, start=1):
                 matches_url.append(match.group())
             matches_url = list(set(matches_url))
+            print(f"Now scrapy page {i},total {len(matches_url)}")
             if 0 == len(matches_url):
                 if retrys >= 50:
                     i = 1
@@ -339,8 +340,7 @@ if __name__ == "__main__":
             else:
                 retrys = 0
                 i = i + 1
-            cur_page.write(i)
-            print(f"Now scrapy page {i},total {len(matches_url)}")
+            cur_page.write(str(i))
             process = tqdm.tqdm(matches_url)
             for k in process:
                 try:
@@ -350,7 +350,7 @@ if __name__ == "__main__":
                     import shutil
 
                     shutil.move(f"{k}.mp4", f"{k}.data")
-                    shell_cmd = f"""ffmpeg -i {k}.data -vf "select=eq(pict_type\,I)" -vsync vfr -qscale:v 2 -f image2pipe - | ffmpeg -f image2pipe -i - -c:v libx264 -r 30 {k}.mp4
+                    shell_cmd = f"""ffmpeg  -loglevel quiet -i {k}.data -vf "select=eq(pict_type\,I)" -vsync vfr -qscale:v 2 -f image2pipe - | ffmpeg -f image2pipe -i - -c:v libx264 -r 30 {k}.mp4
                     """
                     subprocess.Popen(
                         shell_cmd,
