@@ -290,8 +290,8 @@ if __name__ == "__main__":
     parser.add_argument("-s", type=str, default="127.0.0.1", help="qdrant server addr")
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
-    parser.add_argument("-tdb", type=bool, default=False)
-    parser.add_argument("-key", type=str, default="", help="qdrant api key")
+    parser.add_argument("-tdb", type=bool, default=True)
+    parser.add_argument("-key", type=str, default=None, help="qdrant api key")
 
     args = parser.parse_args()
     print(args)
@@ -340,7 +340,7 @@ if __name__ == "__main__":
                 i = i + 1
             cur_page.write(str(i))
             process = tqdm.tqdm(matches_url)
-            for k in process:
+            for index, k in enumerate(process):
                 try:
                     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
                     title_b64 = base64.b64encode(title.encode())
@@ -368,7 +368,7 @@ if __name__ == "__main__":
                             feature = img_encoder(frame)
                             batch_data.append(
                                 PointStruct(
-                                    id=vid * 1000000 + fpsn,
+                                    id=vid * 1000000 + index * 10000 + fpsn,
                                     vector=feature.tolist(),
                                     payload={"fpsn": str(fpsn), "title": title_b64},
                                 )
