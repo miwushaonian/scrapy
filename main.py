@@ -367,9 +367,10 @@ if __name__ == "__main__":
                         if fpsn >= 0:
                             vid = int("".join([str(ord(x)) for x in f"{k[6:-4]}"]))
                             feature = img_encoder(frame)
+                            finaly_id = vid * 10000 + index * 1000 + fpsn
                             batch_data.append(
                                 PointStruct(
-                                    id=vid * 1000000 + index * 10000 + fpsn,
+                                    id=finaly_id,
                                     vector=feature.tolist(),
                                     payload={"fpsn": str(fpsn), "title": title_b64},
                                 )
