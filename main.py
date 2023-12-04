@@ -291,6 +291,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=False)
+    parser.add_argument("-key", type=str, default="", help="qdrant api key")
 
     args = parser.parse_args()
     print(args)
@@ -301,7 +302,7 @@ if __name__ == "__main__":
     retrys = 0
     img_encoder = ops.image_embedding.timm(model_name="resnet50")
     if args.tdb:
-        client = QdrantClient(args.s, port=args.p)
+        client = QdrantClient(args.s, port=args.p, api_key=args.key)
         try:
             client.get_collection("video")
         except:
@@ -312,7 +313,7 @@ if __name__ == "__main__":
     while True:
         try:
             if args.tdb:
-                client = QdrantClient(args.s, port=args.p)
+                client = QdrantClient(args.s, port=args.p, api_key=args.key)
             cont = scraper.get(f"https://hsex.men/list-{i}.htm").content
             cont = cont.decode("utf-8")
             test_str = str(cont)
