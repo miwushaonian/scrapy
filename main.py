@@ -293,11 +293,10 @@ if __name__ == "__main__":
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=False)
-    parser.add_argument("-fpsn", type=int, default=48, help="fps")
 
     args = parser.parse_args()
     print(args)
-    cur_page = open("page","w")
+    cur_page = open("page", "w")
     i = args.page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
