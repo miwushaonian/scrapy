@@ -295,7 +295,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    cur_page = open("page", "w")
     i = args.page
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
@@ -312,6 +311,7 @@ if __name__ == "__main__":
             )
     while True:
         try:
+            cur_page = open("page", "w")
             if args.tdb:
                 client = QdrantClient(args.s, port=args.p, api_key=args.key)
             cont = scraper.get(f"https://hsex.men/list-{i}.htm").content
@@ -339,6 +339,7 @@ if __name__ == "__main__":
                 retrys = 0
                 i = i + 1
             cur_page.write(str(i))
+            cur_page.close()
             process = tqdm.tqdm(matches_url)
             for index, k in enumerate(process):
                 try:
