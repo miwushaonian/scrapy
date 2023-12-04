@@ -365,7 +365,7 @@ if __name__ == "__main__":
                             break
                         fpsn = fpsn + 1
                         if fpsn >= 0:
-                            vid = int({k[6:-4]})
+                            vid = int(k[6:-4])
                             feature = img_encoder(frame)
                             finaly_id = vid * 1000000 + index * 10000 + fpsn
                             batch_data.append(
