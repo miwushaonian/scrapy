@@ -287,9 +287,7 @@ def proc(url_list, name_list):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="argparse")
-    parser.add_argument(
-        "-s", type=str, default="10.131.7.124", help="qdrant server addr"
-    )
+    parser.add_argument("-s", type=str, default="127.0.0.1", help="qdrant server addr")
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=False)
