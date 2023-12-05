@@ -22,7 +22,7 @@ def myhash(s):
     for i in range(26):
         r = chr(ord("a") + i)
         z = z.replace(r, str(i))
-    return int(z[:15])
+    return int(z[:12])
 
 
 def get_m3u8(url_path):
