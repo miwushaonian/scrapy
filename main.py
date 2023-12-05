@@ -310,12 +310,18 @@ def f(index, k, args):
         if fpsn >= 0:
             vid = int(k[6:-4])
             feature = img_encoder(frame)
+            thumb = cv2.resize(frame, (128, 128))
+            imgdata_thumb = base64.b64encode(thumb.tobytes()).decode("utf-8")
             finaly_id = vid * 1000000 + index * 10000 + fpsn
             batch_data.append(
                 PointStruct(
                     id=finaly_id,
                     vector=feature.tolist(),
-                    payload={"fpsn": str(fpsn), "title": title_b64},
+                    payload={
+                        "fpsn": str(fpsn),
+                        "title": title_b64,
+                        "thumb": imgdata_thumb,
+                    },
                 )
             )
         if len(batch_data) >= 12 and args.tdb:
@@ -343,7 +349,7 @@ if __name__ == "__main__":
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=True)
     parser.add_argument("-key", type=str, default=None, help="qdrant api key")
-
+    parser.add_argument("-ep", type=int, default=0)
     args = parser.parse_args()
     print(args)
     i = args.page
@@ -360,7 +366,7 @@ if __name__ == "__main__":
                 collection_name="video",
                 vectors_config=VectorParams(size=2048, distance=Distance.COSINE),
             )
-    while True:
+    while (args.ep == 0) or (i <= args.ep):
         try:
             cur_page = open("page", "w")
             if args.tdb:
