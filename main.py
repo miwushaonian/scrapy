@@ -21,7 +21,7 @@ def myhash(s):
     for c in z:
         if c >= "0" and c <= "9":
             r += c
-    return int(r[:13])
+    return int(r[:10])
 
 
 def get_m3u8(url_path):
