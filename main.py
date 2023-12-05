@@ -18,10 +18,11 @@ import hashlib
 def myhash(s):
     z = hashlib.md5(s.encode()).hexdigest()
     r = ""
-    for c in z:
-        if c >= "0" and c <= "9":
-            r += c
-    return int(r[:18])
+    # a to z
+    for i in range(26):
+        r = chr(ord("a") + i)
+        z = z.replace(r, str(i))
+    return int(z[:15])
 
 
 def get_m3u8(url_path):
