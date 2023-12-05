@@ -285,9 +285,60 @@ def proc(url_list, name_list):
         )
 
 
+def f(index, k, args):
+    m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
+    title_b64 = base64.b64encode(title.encode())
+    proc([m3u8_url], [f"{k}"])
+    import shutil
+
+    shutil.move(f"{k}.mp4", f"{k}.data")
+    shell_cmd = f"""ffmpeg  -loglevel quiet -i {k}.data -vf "select=eq(pict_type\,I)" -vsync vfr -qscale:v 2 -f image2pipe - | ffmpeg -loglevel quiet  -f image2pipe -i - -c:v libx264 -r 30 {k}.mp4
+                    """
+    subprocess.Popen(
+        shell_cmd,
+        shell=True,
+    ).wait()
+    os.remove(f"{k}.data")
+    cap = cv2.VideoCapture(f"{k}.mp4")
+    fpsn = 0
+    batch_data = []
+    while True:
+        ret, frame = cap.read()
+        if ret == False:
+            break
+        fpsn = fpsn + 1
+        if fpsn >= 0:
+            vid = int(k[6:-4])
+            feature = img_encoder(frame)
+            finaly_id = vid * 1000000 + index * 10000 + fpsn
+            batch_data.append(
+                PointStruct(
+                    id=finaly_id,
+                    vector=feature.tolist(),
+                    payload={"fpsn": str(fpsn), "title": title_b64},
+                )
+            )
+        if len(batch_data) >= 12 and args.tdb:
+            client.upsert(collection_name="video", points=batch_data, wait=False)
+            batch_data = []
+
+    if len(batch_data) > 0 and args.tdb:
+        client.upsert(collection_name="video", points=batch_data, wait=False)
+    if False == args.tdb:
+        # 序列化
+        output = open(f"{k}.fea", "wb")
+        pickle.dump(batch_data, output)
+        pass
+    cap.release()
+    os.remove(f"{k}.mp4")
+    print(f"{index}-{k} - {fpsn}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="argparse")
-    parser.add_argument("-s", type=str, default="127.0.0.1", help="qdrant server addr")
+    parser.add_argument(
+        "-s", type=str, default="10.131.7.124", help="qdrant server addr"
+    )
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=True)
@@ -327,13 +378,13 @@ if __name__ == "__main__":
             matches_url = list(set(matches_url))
             print(f"Now scrapy page {i},total {len(matches_url)}")
             if 0 == len(matches_url):
-                if retrys >= 50:
-                    i = 1
-                    retrys = 0
-                    print("No more page, return to 1")
-                else:
-                    print(f"No more page, retry 5 times {retrys}")
-                    retrys = retrys + 1
+                # if retrys >= 50:
+                #     i = 1
+                #     retrys = 0
+                #     print("No more page, return to 1")
+                # else:
+                print(f"No more page, retry X times {retrys}")
+                retrys = retrys + 1
                 continue
             else:
                 retrys = 0
@@ -342,60 +393,13 @@ if __name__ == "__main__":
             cur_page.close()
             process = tqdm.tqdm(matches_url)
             for index, k in enumerate(process):
-                try:
-                    m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
-                    title_b64 = base64.b64encode(title.encode())
-                    proc([m3u8_url], [f"{k}"])
-                    import shutil
-
-                    shutil.move(f"{k}.mp4", f"{k}.data")
-                    shell_cmd = f"""ffmpeg  -loglevel quiet -i {k}.data -vf "select=eq(pict_type\,I)" -vsync vfr -qscale:v 2 -f image2pipe - | ffmpeg -loglevel quiet  -f image2pipe -i - -c:v libx264 -r 30 {k}.mp4
-                    """
-                    subprocess.Popen(
-                        shell_cmd,
-                        shell=True,
-                    ).wait()
-                    os.remove(f"{k}.data")
-                    cap = cv2.VideoCapture(f"{k}.mp4")
-                    fpsn = 0
-                    batch_data = []
-                    while True:
-                        ret, frame = cap.read()
-                        if ret == False:
-                            break
-                        fpsn = fpsn + 1
-                        if fpsn >= 0:
-                            vid = int(k[6:-4])
-                            feature = img_encoder(frame)
-                            finaly_id = vid * 1000000 + index * 10000 + fpsn
-                            batch_data.append(
-                                PointStruct(
-                                    id=finaly_id,
-                                    vector=feature.tolist(),
-                                    payload={"fpsn": str(fpsn), "title": title_b64},
-                                )
-                            )
-                        if len(batch_data) >= 12 and args.tdb:
-                            client.upsert(
-                                collection_name="video", points=batch_data, wait=False
-                            )
-                            batch_data = []
-
-                    if len(batch_data) > 0 and args.tdb:
-                        client.upsert(
-                            collection_name="video", points=batch_data, wait=False
-                        )
-                    if False == args.tdb:
-                        # 序列化
-                        output = open(f"{k}.fea", "wb")
-                        pickle.dump(batch_data, output)
+                while True:
+                    try:
+                        f(index, k, args)
+                        break
+                    except Exception as e:
+                        print(e)
                         pass
-                    cap.release()
-                    os.remove(f"{k}.mp4")
-
-                except Exception as e:
-                    print(f"下载视频失败 {k} {e}")
-                    continue
             pass
         except Exception as e:
             print(f"抓取页面失败 {e}")
