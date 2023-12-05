@@ -12,6 +12,16 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from qdrant_client.http.models import PointStruct
 import pickle
+import hashlib
+
+
+def myhash(s):
+    z = hashlib.md5(s.encode()).hexdigest()
+    r = ""
+    for c in z:
+        if c >= "0" and c <= "9":
+            r += c
+    return int(r[:13])
 
 
 def get_m3u8(url_path):
@@ -308,11 +318,11 @@ def f(index, k, args):
             break
         fpsn = fpsn + 1
         if fpsn >= 0:
-            vid = int(k[6:-4])
+            vid = myhash(title)
             feature = img_encoder(frame)
             thumb = cv2.resize(frame, (128, 128))
             imgdata_thumb = base64.b64encode(thumb.tobytes()).decode("utf-8")
-            finaly_id = vid * 1000000 + index * 10000 + fpsn
+            finaly_id = vid * 10000 + fpsn
             batch_data.append(
                 PointStruct(
                     id=finaly_id,
