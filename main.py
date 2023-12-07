@@ -358,8 +358,6 @@ def f(index, k, args):
 
 
 if __name__ == "__main__":
-    #m3u8_url, title = get_m3u8(f"https://hsex.men/video-905311.htm")
-    f(0, "video-905311.htm", None)
     parser = argparse.ArgumentParser(description="argparse")
     parser.add_argument(
         "-s", type=str, default="10.131.7.124", help="qdrant server addr"
