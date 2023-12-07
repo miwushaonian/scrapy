@@ -310,6 +310,12 @@ def f(index, k, args):
         shell=True,
     ).wait()
     os.remove(f"{k}.data")
+    if os.path.exists(f"{k}.mp4")==False:
+        # print(f"{k}.mp4 not exists")
+        lg = open("log.txt", "a")
+        lg.write(f"{k}.mp4 not exists\n")
+        lg.close()
+        return
     cap = cv2.VideoCapture(f"{k}.mp4")
     fpsn = 0
     batch_data = []
@@ -352,6 +358,8 @@ def f(index, k, args):
 
 
 if __name__ == "__main__":
+    #m3u8_url, title = get_m3u8(f"https://hsex.men/video-905311.htm")
+    f(0, "video-905311.htm", None)
     parser = argparse.ArgumentParser(description="argparse")
     parser.add_argument(
         "-s", type=str, default="10.131.7.124", help="qdrant server addr"
