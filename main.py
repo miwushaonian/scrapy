@@ -13,6 +13,7 @@ from qdrant_client.http.models import Distance, VectorParams
 from qdrant_client.http.models import PointStruct
 import pickle
 import hashlib
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 
 
 def myhash(s):
@@ -297,6 +298,20 @@ def proc(url_list, name_list):
 
 
 def f(index, k, args):
+    vid = int(k[6:-4])
+    search_result = client.search(
+        collection_name="count",
+        query_vector=[0],
+        query_filter=Filter(
+            must=[FieldCondition(key="id", match=MatchValue(value=str(vid)))]
+        ),
+        with_payload=True,
+        limit=1,
+    )
+    if len(search_result) > 0 and search_result[0].id == vid:
+        print(f"{k} has insert")
+        return
+
     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
     title_b64 = base64.b64encode(title.encode())
     proc([m3u8_url], [f"{k}"])
@@ -353,6 +368,7 @@ def f(index, k, args):
                     id=vid,
                     vector=[0],
                     payload={
+                        "id": str(vid),
                     },
                 )
             )
@@ -382,7 +398,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s", type=str, default="127.0.0.1", help="qdrant server addr"
     )
-    parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
+    parser.add_argument("-p", type=int, default=7333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=True)
     parser.add_argument("-key", type=str, default=None, help="qdrant api key")
@@ -445,7 +461,13 @@ if __name__ == "__main__":
             for index, k in enumerate(process):
                 while True:
                     try:
+                        import tempfile
+
+                        temp_folder = tempfile.mkdtemp()
+                        cur_dir = os.getcwd()
+                        os.chdir(temp_folder)
                         f(index, k, args)
+                        os.chdir(cur_dir)
                         break
                     except Exception as e:
                         print(e)
