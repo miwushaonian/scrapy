@@ -470,7 +470,7 @@ if __name__ == "__main__":
                         os.chdir(cur_dir)
                         break
                     except Exception as e:
-                        print(e)
+                        print(f"{index}-{k}-{e}")
                         pass
             pass
         except Exception as e:
