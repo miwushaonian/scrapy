@@ -372,10 +372,10 @@ def f(index, k, args):
                     },
                 )
             )
-        if len(batch_data) >= 12 and args.tdb:
+        if len(batch_data) >= 100 and args.tdb:
             client.upsert(collection_name="video", points=batch_data, wait=False)
             batch_data = []
-        if len(batch_data_count) >= 12 and args.tdb:
+        if len(batch_data_count) >= 100 and args.tdb:
             client.upsert(collection_name="count", points=batch_data_count, wait=False)
             batch_data_count = []
 
