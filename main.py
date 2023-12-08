@@ -309,7 +309,7 @@ def f(index, k, args):
         limit=1,
     )
     if len(search_result) > 0 and search_result[0].id == vid:
-        print(f"{k} has insert")
+        print(f"{index}-{k} has insert")
         return
 
     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
