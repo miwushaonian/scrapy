@@ -380,9 +380,9 @@ def f(index, k, args):
             batch_data_count = []
 
     if len(batch_data) > 0 and args.tdb:
-        client.upsert(collection_name="video", points=batch_data, wait=False)
+        client.upsert(collection_name="video", points=batch_data, wait=True)
     if len(batch_data_count) > 0 and args.tdb:
-        client.upsert(collection_name="count", points=batch_data_count, wait=False)
+        client.upsert(collection_name="count", points=batch_data_count, wait=True)
     if False == args.tdb:
         # 序列化
         output = open(f"{k}.fea", "wb")
