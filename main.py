@@ -325,13 +325,14 @@ def f(index, k, args):
     cap = cv2.VideoCapture(f"{k}.mp4")
     fpsn = 0
     batch_data = []
+    batch_data_count = []
     while True:
         ret, frame = cap.read()
         if ret == False:
             break
         fpsn = fpsn + 1
         if fpsn >= 0:
-            vid = myhash(title)
+            vid = int(k[6:-4])
             feature = img_encoder(frame)
             thumb = cv2.resize(frame, (128, 128))
             imgdata_thumb = base64.b64encode(thumb.tobytes()).decode("utf-8")
@@ -347,12 +348,25 @@ def f(index, k, args):
                     },
                 )
             )
+            batch_data_count.append(
+                PointStruct(
+                    id=vid,
+                    vector=[0],
+                    payload={
+                    },
+                )
+            )
         if len(batch_data) >= 12 and args.tdb:
             client.upsert(collection_name="video", points=batch_data, wait=False)
             batch_data = []
+        if len(batch_data_count) >= 12 and args.tdb:
+            client.upsert(collection_name="count", points=batch_data_count, wait=False)
+            batch_data_count = []
 
     if len(batch_data) > 0 and args.tdb:
         client.upsert(collection_name="video", points=batch_data, wait=False)
+    if len(batch_data_count) > 0 and args.tdb:
+        client.upsert(collection_name="count", points=batch_data_count, wait=False)
     if False == args.tdb:
         # 序列化
         output = open(f"{k}.fea", "wb")
@@ -388,6 +402,13 @@ if __name__ == "__main__":
             client.create_collection(
                 collection_name="video",
                 vectors_config=VectorParams(size=2048, distance=Distance.COSINE),
+            )
+        try:
+            client.get_collection("count")
+        except:
+            client.create_collection(
+                collection_name="count",
+                vectors_config=VectorParams(size=1, distance=Distance.COSINE),
             )
     while (args.ep == 0) or (i <= args.ep):
         try:
