@@ -124,7 +124,7 @@ class M3u8Download:
         """
         try:
             with requests.get(
-                m3u8_url, timeout=(3, 30), verify=False, headers=self._headers
+                    m3u8_url, timeout=(3, 30), verify=False, headers=self._headers
             ) as res:
                 self._front_url = res.url.split(res.request.path_url)[0]
                 if "EXT-X-STREAM-INF" in res.text:  # 判定为顶级M3U8文件
@@ -189,11 +189,11 @@ class M3u8Download:
         try:
             if not os.path.exists(name):
                 with requests.get(
-                    ts_url,
-                    stream=True,
-                    timeout=(5, 60),
-                    verify=False,
-                    headers=self._headers,
+                        ts_url,
+                        stream=True,
+                        timeout=(5, 60),
+                        verify=False,
+                        headers=self._headers,
                 ) as res:
                     if res.status_code == 200:
                         with open(name, "wb") as ts:
@@ -238,7 +238,7 @@ class M3u8Download:
             true_key_url = self._url.rsplit("/", 1)[0] + "/" + may_key_url
         try:
             with requests.get(
-                true_key_url, timeout=(5, 30), verify=False, headers=self._headers
+                    true_key_url, timeout=(5, 30), verify=False, headers=self._headers
             ) as res:
                 with open(os.path.join(self._file_path, "key"), "wb") as f:
                     f.write(res.content)
@@ -270,8 +270,8 @@ class M3u8Download:
         合并.ts文件，输出mp4格式视频，需要ffmpeg
         """
         cmd = (
-            'ffmpeg -loglevel quiet -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
-            % (self._file_path, self._name)
+                'ffmpeg -loglevel quiet -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
+                % (self._file_path, self._name)
         )
         # os.system(cmd)
         self.shell_run_cmd_block(cmd)
@@ -300,6 +300,12 @@ def f(index, k, args):
     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
     title_b64 = base64.b64encode(title.encode())
     proc([m3u8_url], [f"{k}"])
+    if os.path.exists(f"{k}.mp4") == False:
+        # print(f"{k}.mp4 not exists")
+        lg = open("log.txt", "a")
+        lg.write(f"{k}.mp4 not exists0\n")
+        lg.close()
+        return
     import shutil
 
     shutil.move(f"{k}.mp4", f"{k}.data")
@@ -310,7 +316,7 @@ def f(index, k, args):
         shell=True,
     ).wait()
     os.remove(f"{k}.data")
-    if os.path.exists(f"{k}.mp4")==False:
+    if os.path.exists(f"{k}.mp4") == False:
         # print(f"{k}.mp4 not exists")
         lg = open("log.txt", "a")
         lg.write(f"{k}.mp4 not exists\n")
