@@ -392,7 +392,7 @@ def f(index, k, args):
         pass
     cap.release()
     os.remove(f"{k}.mp4")
-    if False == args.tdb:
+    if True == args.tdb:
         client.upsert(
             collection_name="count",
             points=[
