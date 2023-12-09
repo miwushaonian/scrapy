@@ -386,7 +386,7 @@ def f(index, k, args):
     #     client.upsert(collection_name="count", points=batch_data_count, wait=True)
     if False == args.tdb:
         # 序列化
-        output = open(f"{k}.fea", "wb")
+        output = open(os.path.join(args.feapath, f"{k}.fea"), "wb")
         pickle.dump(batch_data, output)
         pass
     cap.release()
@@ -416,6 +416,7 @@ if __name__ == "__main__":
     parser.add_argument("-key", type=str, default=None, help="qdrant api key")
     parser.add_argument("-ep", type=int, default=0)
     parser.add_argument("-bs", type=int, default=50)
+    parser.add_argument("-feapath", type=str, default="")
     args = parser.parse_args()
     print(args)
     i = args.page
