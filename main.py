@@ -299,18 +299,19 @@ def proc(url_list, name_list):
 
 def f(index, k, args):
     vid = int(k[6:-4])
-    search_result = client.search(
-        collection_name="count",
-        query_vector=[0.0],
-        query_filter=Filter(
-            must=[FieldCondition(key="id", match=MatchValue(value=str(vid)))]
-        ),
-        with_payload=True,
-        limit=1,
-    )
-    if len(search_result) > 0 and search_result[0].id == vid:
-        print(f"{index}-{k} has insert")
-        return
+    if False == args.tdb:
+        search_result = client.search(
+            collection_name="count",
+            query_vector=[0.0],
+            query_filter=Filter(
+                must=[FieldCondition(key="id", match=MatchValue(value=str(vid)))]
+            ),
+            with_payload=True,
+            limit=1,
+        )
+        if len(search_result) > 0 and search_result[0].id == vid:
+            print(f"{index}-{k} has insert")
+            return
 
     m3u8_url, title = get_m3u8(f"https://hsex.men/{k}")
     title_b64 = base64.b64encode(title.encode())
