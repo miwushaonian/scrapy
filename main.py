@@ -125,7 +125,7 @@ class M3u8Download:
         """
         try:
             with requests.get(
-                    m3u8_url, timeout=(3, 30), verify=False, headers=self._headers
+                m3u8_url, timeout=(3, 30), verify=False, headers=self._headers
             ) as res:
                 self._front_url = res.url.split(res.request.path_url)[0]
                 if "EXT-X-STREAM-INF" in res.text:  # 判定为顶级M3U8文件
@@ -190,11 +190,11 @@ class M3u8Download:
         try:
             if not os.path.exists(name):
                 with requests.get(
-                        ts_url,
-                        stream=True,
-                        timeout=(5, 60),
-                        verify=False,
-                        headers=self._headers,
+                    ts_url,
+                    stream=True,
+                    timeout=(5, 60),
+                    verify=False,
+                    headers=self._headers,
                 ) as res:
                     if res.status_code == 200:
                         with open(name, "wb") as ts:
@@ -239,7 +239,7 @@ class M3u8Download:
             true_key_url = self._url.rsplit("/", 1)[0] + "/" + may_key_url
         try:
             with requests.get(
-                    true_key_url, timeout=(5, 30), verify=False, headers=self._headers
+                true_key_url, timeout=(5, 30), verify=False, headers=self._headers
             ) as res:
                 with open(os.path.join(self._file_path, "key"), "wb") as f:
                     f.write(res.content)
@@ -271,8 +271,8 @@ class M3u8Download:
         合并.ts文件，输出mp4格式视频，需要ffmpeg
         """
         cmd = (
-                'ffmpeg -loglevel quiet -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
-                % (self._file_path, self._name)
+            'ffmpeg -loglevel quiet -y -allowed_extensions ALL -i "%s.m3u8" -acodec copy -vcodec copy -f mp4 %s.mp4'
+            % (self._file_path, self._name)
         )
         # os.system(cmd)
         self.shell_run_cmd_block(cmd)
@@ -301,7 +301,7 @@ def f(index, k, args):
     vid = int(k[6:-4])
     search_result = client.search(
         collection_name="count",
-        query_vector=[0],
+        query_vector=[0.0],
         query_filter=Filter(
             must=[FieldCondition(key="id", match=MatchValue(value=str(vid)))]
         ),
@@ -366,7 +366,7 @@ def f(index, k, args):
             batch_data_count.append(
                 PointStruct(
                     id=vid,
-                    vector=[0],
+                    vector=[0.0],
                     payload={
                         "id": str(vid),
                     },
@@ -395,9 +395,7 @@ def f(index, k, args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="argparse")
-    parser.add_argument(
-        "-s", type=str, default="127.0.0.1", help="qdrant server addr"
-    )
+    parser.add_argument("-s", type=str, default="127.0.0.1", help="qdrant server addr")
     parser.add_argument("-p", type=int, default=7333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
     parser.add_argument("-tdb", type=bool, default=True)
