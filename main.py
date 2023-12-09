@@ -340,7 +340,7 @@ def f(index, k, args):
     cap = cv2.VideoCapture(f"{k}.mp4")
     fpsn = 0
     batch_data = []
-    batch_data_count = []
+    # batch_data_count = []
     while True:
         ret, frame = cap.read()
         if ret == False:
@@ -363,26 +363,27 @@ def f(index, k, args):
                     },
                 )
             )
-            batch_data_count.append(
-                PointStruct(
-                    id=vid,
-                    vector=[0.0],
-                    payload={
-                        "id": str(vid),
-                    },
-                )
-            )
+            # batch_data_count.append(
+            #     PointStruct(
+            #         id=vid,
+            #         vector=[0.0],
+            #         payload={
+            #             "id": str(vid),
+            #         },
+            #     )
+            # )
         if len(batch_data) >= 20 and args.tdb:
             client.upsert(collection_name="video", points=batch_data, wait=True)
             batch_data = []
-        if len(batch_data_count) >= 20 and args.tdb:
-            client.upsert(collection_name="count", points=batch_data_count, wait=True)
-            batch_data_count = []
+        # 一条影片记录应该只需要插入一次即可
+        # if len(batch_data_count) >= 20 and args.tdb:
+        #     client.upsert(collection_name="count", points=batch_data_count, wait=True)
+        #     batch_data_count = []
 
     if len(batch_data) > 0 and args.tdb:
         client.upsert(collection_name="video", points=batch_data, wait=True)
-    if len(batch_data_count) > 0 and args.tdb:
-        client.upsert(collection_name="count", points=batch_data_count, wait=True)
+    # if len(batch_data_count) > 0 and args.tdb:
+    #     client.upsert(collection_name="count", points=batch_data_count, wait=True)
     if False == args.tdb:
         # 序列化
         output = open(f"{k}.fea", "wb")
@@ -390,6 +391,19 @@ def f(index, k, args):
         pass
     cap.release()
     os.remove(f"{k}.mp4")
+    client.upsert(
+        collection_name="count",
+        points=[
+            PointStruct(
+                id=vid,
+                vector=[0.0],
+                payload={
+                    "id": str(vid),
+                },
+            )
+        ],
+        wait=True,
+    )
     print(f"{index}-{k} - {fpsn}")
 
 
