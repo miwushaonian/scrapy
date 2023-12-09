@@ -372,7 +372,7 @@ def f(index, k, args):
             #         },
             #     )
             # )
-        if len(batch_data) >= 20 and args.tdb:
+        if len(batch_data) >= args.bs and args.tdb:
             client.upsert(collection_name="video", points=batch_data, wait=True)
             batch_data = []
         # 一条影片记录应该只需要插入一次即可
@@ -415,6 +415,7 @@ if __name__ == "__main__":
     parser.add_argument("-tdb", type=bool, default=True)
     parser.add_argument("-key", type=str, default=None, help="qdrant api key")
     parser.add_argument("-ep", type=int, default=0)
+    parser.add_argument("-bs", type=int, default=50)
     args = parser.parse_args()
     print(args)
     i = args.page
