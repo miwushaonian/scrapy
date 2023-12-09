@@ -299,7 +299,7 @@ def proc(url_list, name_list):
 
 def f(index, k, args):
     vid = int(k[6:-4])
-    if False == args.tdb:
+    if True == args.tdb:
         search_result = client.search(
             collection_name="count",
             query_vector=[0.0],
@@ -414,7 +414,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", type=str, default="127.0.0.1", help="qdrant server addr")
     parser.add_argument("-p", type=int, default=6333, help="qdrant server port")
     parser.add_argument("-page", type=int, default=1, help="age of the programmer")
-    parser.add_argument("-tdb", type=bool, default=True)
+    parser.add_argument("-tdb", type=bool, default=False)
     parser.add_argument("-key", type=str, default=None, help="qdrant api key")
     parser.add_argument("-ep", type=int, default=0)
     parser.add_argument("-bs", type=int, default=50)
