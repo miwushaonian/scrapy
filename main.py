@@ -391,19 +391,20 @@ def f(index, k, args):
         pass
     cap.release()
     os.remove(f"{k}.mp4")
-    client.upsert(
-        collection_name="count",
-        points=[
-            PointStruct(
-                id=vid,
-                vector=[0.0],
-                payload={
-                    "id": str(vid),
-                },
-            )
-        ],
-        wait=True,
-    )
+    if False == args.tdb:
+        client.upsert(
+            collection_name="count",
+            points=[
+                PointStruct(
+                    id=vid,
+                    vector=[0.0],
+                    payload={
+                        "id": str(vid),
+                    },
+                )
+            ],
+            wait=True,
+        )
     print(f"{index}-{k} - {fpsn}")
 
 
