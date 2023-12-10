@@ -374,17 +374,17 @@ def f(index, k, args):
             #     )
             # )
         if len(batch_data) >= args.bs and args.tdb:
-            client.upsert(collection_name="video", points=batch_data, wait=True)
+            client.upsert(collection_name="video", points=batch_data, wait=False)
             batch_data = []
         # 一条影片记录应该只需要插入一次即可
         # if len(batch_data_count) >= 20 and args.tdb:
-        #     client.upsert(collection_name="count", points=batch_data_count, wait=True)
+        #     client.upsert(collection_name="count", points=batch_data_count, wait=False)
         #     batch_data_count = []
 
     if len(batch_data) > 0 and args.tdb:
-        client.upsert(collection_name="video", points=batch_data, wait=True)
+        client.upsert(collection_name="video", points=batch_data, wait=False)
     # if len(batch_data_count) > 0 and args.tdb:
-    #     client.upsert(collection_name="count", points=batch_data_count, wait=True)
+    #     client.upsert(collection_name="count", points=batch_data_count, wait=False)
     if False == args.tdb:
         # 序列化
         output = open(os.path.join(args.feapath, f"{k}.fea"), "wb")
@@ -404,7 +404,7 @@ def f(index, k, args):
                     },
                 )
             ],
-            wait=True,
+            wait=False,
         )
     print(f"{index}-{k} - {fpsn}")
 
