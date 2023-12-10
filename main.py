@@ -31,7 +31,7 @@ def get_m3u8(url_path):
 
     scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
     # Or: scraper = cfscrape.CloudflareScraper()  # CloudflareScraper inherits from requests.Session
-    cont = scraper.get(url_path).content
+    cont = scraper.get(url_path, timeout=(3, 300)).content
     cont = cont.decode("utf-8")
     test_str = str(cont)
     import re
@@ -447,7 +447,9 @@ if __name__ == "__main__":
             cur_page = open("page", "w")
             if args.tdb:
                 client = QdrantClient(args.s, port=args.p, api_key=args.key)
-            cont = scraper.get(f"https://hsex.men/list-{i}.htm").content
+            cont = scraper.get(
+                f"https://hsex.men/list-{i}.htm", timeout=(3, 300)
+            ).content
             cont = cont.decode("utf-8")
             test_str = str(cont)
             import re
